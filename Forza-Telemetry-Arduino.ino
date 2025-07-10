@@ -93,10 +93,10 @@ void loop() {
 
   if (packetSize == sizeof(Sled)) {
     Sled* packet = (Sled*)packetBuffer;
-    renderRpm(packet->CurrentEngineRpm);
+    renderRpm(packet);
   } else if (packetSize == 332) {
     Dash* packet = (Dash*)packetBuffer;
-    renderRpm(packet->CurrentEngineRpm);
+    renderRpm(packet);
     renderBestLap(packet);
     renderLastLap(packet);
   } else {
@@ -105,11 +105,11 @@ void loop() {
   }
 }
 
-void renderRpm(float rpm) {
-  if (rpm == 0.0) return;
+void renderRpm(Sled* packet) {
+  if (packet->CurrentEngineRpm == 0.0) return;
   lcd.setCursor(5, 0);
   char buffer[8];
-  dtostrf(rpm, 5, 0, buffer);
+  dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
   lcd.print(buffer);
 }
 
