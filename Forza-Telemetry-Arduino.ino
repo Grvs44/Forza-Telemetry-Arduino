@@ -2,13 +2,15 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
 #include <LiquidCrystal_I2C.h>
+#include "structs.cpp"
+#define BUFFER_SIZE 400
 
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 IPAddress ip(192, 168, 0, 171);
 unsigned int port = 8888;
-char packetBuffer[UDP_TX_PACKET_MAX_SIZE];
+char packetBuffer[BUFFER_SIZE];
 EthernetUDP Udp;
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
@@ -48,32 +50,34 @@ void setup() {
   Udp.begin(port);
   lcd.clear();
   lcd.setCursor(0, 0);
-  lcd.println("Waiting for data");
+  lcd.print("Waiting for data");
+  lcd.setCursor(0,1);
+  lcd.print(sizeof(Sled));
+  lcd.print(" ");
+  lcd.print(sizeof(Dash));
 }
 
 void loop() {
-  int packetSize = Udp.parsePacket();
-  if (packetSize) {
-    lcd.clear();
-    lcd.print("Received packet of size ");
-    lcd.print(packetSize);
-    lcd.setCursor(0, 1);
-    lcd.print("From ");
-    IPAddress remote = Udp.remoteIP();
-    for (int i = 0; i < 4; i++) {
-      lcd.print(remote[i], DEC);
-      if (i < 3) {
-        lcd.print(".");
-      }
-    }
-    lcd.print(", port ");
-    lcd.println(Udp.remotePort());
-
-    // read the packet into packetBufffer
-    lcd.setCursor(0, 3);
-    Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-    lcd.print("Contents: ");
-    lcd.println(packetBuffer);
-  }
   delay(10);
+  int packetSize = Udp.parsePacket();
+  if (packetSize == 0) return;
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  switch (packetSize) {
+    case sizeof(Sled):
+      lcd.print("Sled packet");
+      break;
+    case sizeof(Dash):
+      lcd.print("Dash packet");
+      break;
+    default:
+      lcd.print("Unknown packet");
+      return;
+  }
+
+  lcd.setCursor(0, 2);
+  Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+  Dash* packet = (Dash*)packetBuffer;
+  lcd.print("RPM: ");
+  lcd.print(round(packet->CurrentEngineRpm));
 }
