@@ -94,7 +94,7 @@ void loop() {
   if (packetSize == sizeof(Sled)) {
     Sled* packet = (Sled*)packetBuffer;
     renderRpm(packet);
-  } else if (packetSize == 332) {
+  } else if (packetSize == 311) {
     Dash* packet = (Dash*)packetBuffer;
     renderRpm(packet);
     renderBestLap(packet);
@@ -102,6 +102,7 @@ void loop() {
   } else {
     lcd.setCursor(5, 0);
     lcd.print("?");
+    lcd.print(packetSize);
   }
 }
 
