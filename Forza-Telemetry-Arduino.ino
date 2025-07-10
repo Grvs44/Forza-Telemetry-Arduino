@@ -22,6 +22,8 @@ typedef enum {
 } State;
 
 State state = WAITING;
+float bestLap = 0.0;
+float lastLap = 0.0;
 
 void setup() {
   Ethernet.init(10);
@@ -75,6 +77,10 @@ void loop() {
   if (newState != state) {
     if (state == WAITING) {
       lcd.clear();
+      lcd.setCursor(0, 1);
+      lcd.print("Best lap:");
+      lcd.setCursor(0, 2);
+      lcd.print("Last lap:");
     }
     state = newState;
     lcd.setCursor(0, 0);
@@ -88,9 +94,11 @@ void loop() {
   if (packetSize == sizeof(Sled)) {
     Sled* packet = (Sled*)packetBuffer;
     renderRpm(packet->CurrentEngineRpm);
-  } else if (packetSize == sizeof(Dash)) {
+  } else if (packetSize == 332) {
     Dash* packet = (Dash*)packetBuffer;
     renderRpm(packet->CurrentEngineRpm);
+    renderBestLap(packet);
+    renderLastLap(packet);
   } else {
     lcd.setCursor(5, 0);
     lcd.print("?");
@@ -103,4 +111,16 @@ void renderRpm(float rpm) {
   char buffer[8];
   dtostrf(rpm, 5, 0, buffer);
   lcd.print(buffer);
+}
+
+void renderBestLap(Dash* packet) {
+  if (packet->BestLap == bestLap) return;
+  lcd.setCursor(10, 1);
+  lcd.print(packet->BestLap);
+}
+
+void renderLastLap(Dash* packet) {
+  if (packet->LastLap == lastLap) return;
+  lcd.setCursor(10, 2);
+  lcd.print(packet->LastLap);
 }
