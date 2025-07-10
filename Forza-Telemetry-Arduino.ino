@@ -90,6 +90,7 @@ void loop() {
       lcd.print("      In menu       ");
     }
   }
+  if (state != RACE) return;
 
   if (packetSize == sizeof(Sled)) {
     Sled* packet = (Sled*)packetBuffer;
@@ -107,7 +108,6 @@ void loop() {
 }
 
 void renderRpm(Sled* packet) {
-  if (packet->CurrentEngineRpm == 0.0) return;
   lcd.setCursor(5, 0);
   char buffer[8];
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
@@ -116,12 +116,14 @@ void renderRpm(Sled* packet) {
 
 void renderBestLap(Dash* packet) {
   if (packet->BestLap == bestLap) return;
+  bestLap = packet->BestLap;
   lcd.setCursor(10, 1);
-  lcd.print(packet->BestLap);
+  lcd.print(bestLap);
 }
 
 void renderLastLap(Dash* packet) {
   if (packet->LastLap == lastLap) return;
+  lastLap = packet->LastLap;
   lcd.setCursor(10, 2);
-  lcd.print(packet->LastLap);
+  lcd.print(lastLap);
 }
