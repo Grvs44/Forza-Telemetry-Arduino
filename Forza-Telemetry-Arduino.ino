@@ -15,6 +15,14 @@ EthernetUDP Udp;
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
+typedef enum {
+  MENU,
+  RACE,
+  WAITING,
+} State;
+
+State state = WAITING;
+
 void setup() {
   Ethernet.init(10);
   Ethernet.begin(mac, ip);
@@ -51,7 +59,7 @@ void setup() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Waiting for data");
-  lcd.setCursor(0,1);
+  lcd.setCursor(0, 1);
   lcd.print(sizeof(Sled));
   lcd.print(" ");
   lcd.print(sizeof(Dash));
@@ -61,23 +69,38 @@ void loop() {
   delay(10);
   int packetSize = Udp.parsePacket();
   if (packetSize == 0) return;
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  switch (packetSize) {
-    case sizeof(Sled):
-      lcd.print("Sled packet");
-      break;
-    case sizeof(Dash):
-      lcd.print("Dash packet");
-      break;
-    default:
-      lcd.print("Unknown packet");
-      return;
+  Udp.read(packetBuffer, BUFFER_SIZE);
+
+  State newState = (State)(((Sled*)packetBuffer)->IsRaceOn);
+  if (newState != state) {
+    if (state == WAITING) {
+      lcd.clear();
+    }
+    state = newState;
+    lcd.setCursor(0, 0);
+    if (state) {
+      lcd.print("RPM:                ");
+    } else {
+      lcd.print("      In menu       ");
+    }
   }
 
-  lcd.setCursor(0, 2);
-  Udp.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-  Dash* packet = (Dash*)packetBuffer;
-  lcd.print("RPM: ");
-  lcd.print(round(packet->CurrentEngineRpm));
+  if (packetSize == sizeof(Sled)) {
+    Sled* packet = (Sled*)packetBuffer;
+    renderRpm(packet->CurrentEngineRpm);
+  } else if (packetSize == sizeof(Dash)) {
+    Dash* packet = (Dash*)packetBuffer;
+    renderRpm(packet->CurrentEngineRpm);
+  } else {
+    lcd.setCursor(5, 0);
+    lcd.print("?");
+  }
+}
+
+void renderRpm(float rpm) {
+  if (rpm == 0.0) return;
+  lcd.setCursor(5, 0);
+  char buffer[8];
+  dtostrf(rpm, 5, 0, buffer);
+  lcd.print(buffer);
 }
