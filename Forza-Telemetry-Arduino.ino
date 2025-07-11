@@ -3,13 +3,10 @@
 #include <EthernetUdp.h>
 #include <LiquidCrystal_I2C.h>
 #include "structs.cpp"
-#define BUFFER_SIZE 400
+#include "settings.h"
 
-byte mac[] = {
-  0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
-};
-IPAddress ip(192, 168, 0, 171);
-unsigned int port = 8888;
+byte mac[] = MAC_ADDRESS;
+IPAddress ip(IP_ADDRESS);
 char packetBuffer[BUFFER_SIZE];
 EthernetUDP Udp;
 
@@ -26,7 +23,7 @@ float bestLap = 0.0;
 float lastLap = 0.0;
 
 void setup() {
-  Ethernet.init(10);
+  Ethernet.init(ETHERNET_INIT);
   Ethernet.begin(mac, ip);
 
   lcd.init();
@@ -57,7 +54,7 @@ void setup() {
     while (Ethernet.linkStatus() == LinkOFF) delay(10000);
   }
 
-  Udp.begin(port);
+  Udp.begin(PORT);
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Waiting for data");
