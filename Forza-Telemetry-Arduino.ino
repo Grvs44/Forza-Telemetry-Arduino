@@ -22,7 +22,13 @@ State state = WAITING;
 float bestLap = 0.0;
 float lastLap = 0.0;
 
+byte rpmLeds[] = RPM_LEDS;
+
 void setup() {
+  for (int i = RPM_LEDS_MAX; i >= 0; i--) {
+    pinMode(rpmLeds[i], OUTPUT);
+  }
+
   Ethernet.init(ETHERNET_INIT);
   Ethernet.begin(mac, ip);
 
@@ -61,7 +67,11 @@ void setup() {
   lcd.setCursor(0, 1);
   lcd.print(sizeof(Sled));
   lcd.print(" ");
-  lcd.print(sizeof(Dash));
+  lcd.print(sizeof(Dash7));
+  lcd.print(" ");
+  lcd.print(sizeof(DashH));
+  lcd.print(" ");
+  lcd.print(sizeof(DashM));
 }
 
 void loop() {
@@ -88,6 +98,7 @@ void loop() {
     }
   }
   if (state == RACE) showRace(packetSize);
+  else stepRpmLeds();
 }
 
 void showRace(int packetSize) {
@@ -144,4 +155,27 @@ void renderLastLap(Dash* packet) {
   lastLap = packet->LastLap;
   lcd.setCursor(10, 2);
   lcd.print(lastLap);
+}
+
+void stepRpmLeds() {
+  static int position = 1;
+  static bool direction = false;
+  static unsigned long lastUpdate = 0;
+
+  if (millis() >= lastUpdate + STEP_PERIOD) return;
+  digitalWrite(rpmLeds[position], LOW);
+  digitalWrite(rpmLeds[RPM_LEDS_MAX - position], LOW);
+
+  if (position == 0 || position == RPM_LEDS_MAX) {
+    direction = !direction;
+  }
+
+  if (direction) {  // left half moving right
+    position++;
+  } else {  // left half moving left
+    position++;
+  }
+  digitalWrite(rpmLeds[position], HIGH);
+  digitalWrite(rpmLeds[RPM_LEDS_MAX - position], HIGH);
+  lastUpdate = millis();
 }
