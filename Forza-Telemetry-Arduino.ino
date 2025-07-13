@@ -87,20 +87,36 @@ void loop() {
       lcd.print("      In menu       ");
     }
   }
-  if (state != RACE) return;
+  if (state == RACE) showRace(packetSize);
+}
 
-  if (packetSize == sizeof(Sled)) {
-    Sled* packet = (Sled*)packetBuffer;
-    renderRpm(packet);
-  } else if (packetSize == 311) {
-    Dash* packet = (Dash*)packetBuffer;
-    renderRpm(packet);
-    renderBestLap(packet);
-    renderLastLap(packet);
-  } else {
-    lcd.setCursor(5, 0);
-    lcd.print("?");
-    lcd.print(packetSize);
+void showRace(int packetSize) {
+  switch (packetSize) {
+    case sizeof(Sled):
+      {
+        Sled* packet = (Sled*)packetBuffer;
+        renderRpm(packet);
+        break;
+      }
+    case sizeof(Dash7):
+    case sizeof(DashM):
+      {
+        Dash7* packet = (Dash7*)packetBuffer;
+        renderRpm(&(packet->sled));
+        renderDash(&(packet->dash));
+        break;
+      }
+    case sizeof(DashH):
+      {
+        DashH* packet = (DashH*)packetBuffer;
+        renderRpm(&(packet->sled));
+        renderDash(&(packet->dash));
+        break;
+      }
+    default:
+      lcd.setCursor(5, 0);
+      lcd.print("?");
+      lcd.print(packetSize);
   }
 }
 
@@ -109,6 +125,11 @@ void renderRpm(Sled* packet) {
   char buffer[8];
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
   lcd.print(buffer);
+}
+
+void renderDash(Dash* dash) {
+  renderBestLap(dash);
+  renderLastLap(dash);
 }
 
 void renderBestLap(Dash* packet) {

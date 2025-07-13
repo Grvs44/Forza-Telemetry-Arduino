@@ -1,4 +1,5 @@
 // Adapted from https://support.forzamotorsport.net/hc/en-us/articles/21742934024211-Forza-Motorsport-Data-Out-Documentation
+// and https://github.com/geeooff/forza-data-web
 #include <inttypes.h>
 
 typedef struct {
@@ -99,7 +100,8 @@ typedef struct {
   int32_t NumCylinders;
 } Sled;
 
-typedef struct : Sled {
+// Motorsport 7 Dash Extras
+typedef struct {
   float PositionX;
   float PositionY;
   float PositionZ;
@@ -127,7 +129,26 @@ typedef struct : Sled {
   int8_t Steer;
   int8_t NormalizedDrivingLine;
   int8_t NormalizedAIBrakeDifference;
+} Dash;
 
+// Forza Motorsport 7 Dash
+typedef struct {
+  Sled sled;
+  Dash dash;
+} Dash7;
+
+// Horizon 4+ Dash
+typedef struct {
+  Sled sled;
+  uint32_t CarCategory;
+  uint32_t Unknown1;
+  uint32_t Unknown2;
+  Dash dash;
+  uint8_t b;
+} DashH;
+
+// Motorsport 2023 Dash
+typedef struct : Dash7 {
   float TireWearFrontLeft;
   float TireWearFrontRight;
   float TireWearRearLeft;
@@ -135,4 +156,4 @@ typedef struct : Sled {
 
   // ID for track
   int32_t TrackOrdinal;
-} Dash;
+} DashM;
