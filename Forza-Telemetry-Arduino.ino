@@ -41,7 +41,7 @@ void setup() {
     lcd.clear();
     lcd.setCursor(6, 0);
     lcd.print("Ethernet");
-    lcd.setCursor(8, 1);
+    lcd.setCursor(7, 1);
     lcd.print("shield");
     lcd.setCursor(4, 2);
     lcd.print("disconnected");
