@@ -29,9 +29,6 @@ void setup() {
     pinMode(rpmLeds[i], OUTPUT);
   }
 
-  Ethernet.init(ETHERNET_INIT);
-  Ethernet.begin(mac, ip);
-
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
@@ -80,7 +77,10 @@ void findEthernetIssue() {
 void loop() {
   delay(LOOP_DELAY);
   int packetSize = Udp.parsePacket();
-  if (packetSize == 0) return;
+  if (packetSize == 0) {
+    if (state != RACE) stepRpmLeds();
+    return;
+  }
   Udp.read(packetBuffer, BUFFER_SIZE);
 
   State newState = (State)(((Sled*)packetBuffer)->IsRaceOn);
@@ -101,7 +101,6 @@ void loop() {
     }
   }
   if (state == RACE) showRace(packetSize);
-  else stepRpmLeds();
 }
 
 void showRace(int packetSize) {
