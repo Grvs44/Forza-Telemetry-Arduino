@@ -162,18 +162,18 @@ void stepRpmLeds() {
   static bool direction = false;
   static unsigned long lastUpdate = 0;
 
-  if (millis() >= lastUpdate + STEP_PERIOD) return;
+  if (millis() < lastUpdate + STEP_PERIOD) return;
   digitalWrite(rpmLeds[position], LOW);
   digitalWrite(rpmLeds[RPM_LEDS_MAX - position], LOW);
 
-  if (position == 0 || position == RPM_LEDS_MAX) {
+  if (position == 0 || position == RPM_LEDS_MAX / 2) {
     direction = !direction;
   }
 
   if (direction) {  // left half moving right
     position++;
   } else {  // left half moving left
-    position++;
+    position--;
   }
   digitalWrite(rpmLeds[position], HIGH);
   digitalWrite(rpmLeds[RPM_LEDS_MAX - position], HIGH);
