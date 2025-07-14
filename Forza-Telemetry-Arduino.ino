@@ -37,6 +37,22 @@ void setup() {
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
 
+  Ethernet.init(ETHERNET_INIT);
+  while (Ethernet.begin(mac) == 0) {
+    findEthernetIssue();
+  }
+
+  Udp.begin(PORT);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Waiting for data");
+  lcd.setCursor(0, 1);
+  lcd.print(Ethernet.localIP());
+  lcd.print(":");
+  lcd.print(PORT);
+}
+
+void findEthernetIssue() {
   if (Ethernet.hardwareStatus() == EthernetNoHardware) {
     lcd.clear();
     lcd.setCursor(6, 0);
@@ -46,7 +62,7 @@ void setup() {
     lcd.setCursor(4, 2);
     lcd.print("disconnected");
     while (true) {
-      delay(1);
+      delay(-1);
     }
   }
   if (Ethernet.linkStatus() == LinkOFF) {
@@ -59,19 +75,6 @@ void setup() {
     lcd.print("disconnected");
     while (Ethernet.linkStatus() == LinkOFF) delay(10000);
   }
-
-  Udp.begin(PORT);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("Waiting for data");
-  lcd.setCursor(0, 1);
-  lcd.print(sizeof(Sled));
-  lcd.print(" ");
-  lcd.print(sizeof(Dash7));
-  lcd.print(" ");
-  lcd.print(sizeof(DashH));
-  lcd.print(" ");
-  lcd.print(sizeof(DashM));
 }
 
 void loop() {
