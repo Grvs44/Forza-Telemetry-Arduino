@@ -40,7 +40,7 @@ void setup() {
 
   Udp.begin(PORT);
   lcd.clear();
-  lcd.setCursor(0, 0);
+  lcd.setCursor(2, 0);
   lcd.print("Waiting for data");
   lcd.setCursor(0, 1);
   lcd.print(Ethernet.localIP());
