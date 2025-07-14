@@ -136,6 +136,7 @@ void showRace(int packetSize) {
 }
 
 void renderRpm(Sled* packet) {
+  updateRpmLeds(packet);
   lcd.setCursor(5, 0);
   char buffer[8];
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
@@ -173,6 +174,19 @@ void printLap(float lap) {
   lcd.print(mins);
   lcd.print(':');
   lcd.print(secs);
+}
+
+void updateRpmLeds(Sled* packet) {
+  float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
+  int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / (RPM_LEDS_MAX + 1);
+  int ledsOn = ((int)value) / (increment - 1);
+  int i = 0;
+  while (i <= min(ledsOn, RPM_LEDS_MAX)) {
+    digitalWrite(rpmLeds[i++], HIGH);
+  }
+  while (i <= RPM_LEDS_MAX) {
+    digitalWrite(rpmLeds[i++], LOW);
+  }
 }
 
 void stepRpmLeds() {
