@@ -43,8 +43,11 @@ void setup() {
   lcd.setCursor(2, 0);
   lcd.print("Waiting for data");
   lcd.setCursor(0, 1);
+  lcd.print("IP");
+  lcd.setCursor(5, 1);
   lcd.print(Ethernet.localIP());
-  lcd.print(":");
+  lcd.setCursor(0, 2);
+  lcd.print("Port ");
   lcd.print(PORT);
 }
 
