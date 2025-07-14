@@ -6,7 +6,6 @@
 #include "settings.h"
 
 byte mac[] = MAC_ADDRESS;
-IPAddress ip(IP_ADDRESS);
 char packetBuffer[BUFFER_SIZE];
 EthernetUDP Udp;
 
@@ -34,7 +33,7 @@ void setup() {
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
 
-  Ethernet.init(ETHERNET_INIT);
+  Ethernet.init();
   while (Ethernet.begin(mac) == 0) {
     findEthernetIssue();
   }
