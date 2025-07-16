@@ -107,21 +107,21 @@ void loop() {
     case sizeof(Sled):
       {
         Sled* packet = (Sled*)packetBuffer;
-        renderRpm(packet);
+        renderSled(packet);
         break;
       }
     case sizeof(Dash7):
     case sizeof(DashM):
       {
         Dash7* packet = (Dash7*)packetBuffer;
-        renderRpm(&(packet->sled));
+        renderSled(&(packet->sled));
         renderDash(&(packet->dash));
         break;
       }
     case sizeof(DashH):
       {
         DashH* packet = (DashH*)packetBuffer;
-        renderRpm(&(packet->sled));
+        renderSled(&(packet->sled));
         renderDash(&(packet->dash));
         break;
       }
@@ -132,16 +132,41 @@ void loop() {
   }
 }
 
-void renderRpm(Sled* packet) {
+void renderSled(Sled* packet) {
   if (state != RACE) {
     stepRpmLeds();
     return;
   };
+  renderRpm(packet);
+  renderGForce(packet);
+}
+
+void renderRpm(Sled* packet) {
   updateRpmLeds(packet);
   lcd.setCursor(5, 0);
   char buffer[8];
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
   lcd.print(buffer);
+}
+
+void renderGForce(Sled* packet) {
+  static float x = -1.0;
+  static float y = -1.0;
+  static float z = -1.0;
+
+  if (
+    packet->AccelerationX == x
+    && packet->AccelerationY == y
+    && packet->AccelerationZ == z) {
+    return;
+  }
+
+  x = packet->AccelerationX;
+  y = packet->AccelerationY;
+  z = packet->AccelerationZ;
+  float size = sqrtf(sq(x) + sq(y) + sq(z)) / GFS;
+  lcd.setCursor(4, 3);
+  lcd.print(size);
 }
 
 void renderDash(Dash* dash) {

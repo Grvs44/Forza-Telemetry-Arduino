@@ -15,3 +15,6 @@
 #define RPM_LEDS_MAX 5
 // Time in ms between each update in RPM step
 #define STEP_PERIOD 500
+
+// Gravitational field strength (g) ms^-2
+#define GFS 9.81
