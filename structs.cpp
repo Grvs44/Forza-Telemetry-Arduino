@@ -52,7 +52,7 @@ typedef struct {
   int32_t WheelOnRumbleStripFrontLeft;
   int32_t WheelOnRumbleStripFrontRight;
   int32_t WheelOnRumbleStripRearLeft;
-  int32_t heelOnRumbleStripRearRight;
+  int32_t WheelOnRumbleStripRearRight;
 
   // = from 0 to 1, where 1 is the deepest puddle
   float WheelInPuddleDepthFrontLeft;
