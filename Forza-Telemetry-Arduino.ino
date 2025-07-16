@@ -102,10 +102,7 @@ void loop() {
       lcd.print("      In menu       ");
     }
   }
-  if (state == RACE) showRace(packetSize);
-}
 
-void showRace(int packetSize) {
   switch (packetSize) {
     case sizeof(Sled):
       {
@@ -136,6 +133,10 @@ void showRace(int packetSize) {
 }
 
 void renderRpm(Sled* packet) {
+  if (state != RACE) {
+    stepRpmLeds();
+    return;
+  };
   updateRpmLeds(packet);
   lcd.setCursor(5, 0);
   char buffer[8];
