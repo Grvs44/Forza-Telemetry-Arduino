@@ -77,11 +77,17 @@ void findEthernetIssue() {
 }
 
 void loop() {
+  static int lastPacketSize = 0;
+
   delay(LOOP_DELAY);
   int packetSize = Udp.parsePacket();
   if (packetSize == 0) {
     if (state != RACE) stepRpmLeds();
     return;
+  } else if (packetSize != lastPacketSize) {
+    lastPacketSize = packetSize;
+    lcd.setCursor(19, 3);
+    lcd.print(packetSizeChar(packetSize));
   }
   Udp.read(packetBuffer, BUFFER_SIZE);
 
@@ -129,6 +135,16 @@ void loop() {
       lcd.setCursor(5, 0);
       lcd.print("?");
       lcd.print(packetSize);
+  }
+}
+
+char packetSizeChar(int packetSize) {
+  switch (packetSize) {
+    case sizeof(Sled): return 'S';
+    case sizeof(Dash7): return 'D';
+    case sizeof(DashH): return 'H';
+    case sizeof(DashM): return 'M';
+    default: return '?';
   }
 }
 
