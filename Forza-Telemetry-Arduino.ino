@@ -18,9 +18,6 @@ typedef enum {
 } State;
 
 State state = WAITING;
-float bestLap = -1.0;
-float lastLap = -1.0;
-
 byte rpmLeds[] = RPM_LEDS;
 
 void setup() {
@@ -191,6 +188,7 @@ void renderDash(Dash* dash) {
 }
 
 void renderBestLap(Dash* packet) {
+  static float bestLap = -1.0;
   if (packet->BestLap == bestLap) return;
   bestLap = packet->BestLap;
   lcd.setCursor(10, 1);
@@ -198,6 +196,7 @@ void renderBestLap(Dash* packet) {
 }
 
 void renderLastLap(Dash* packet) {
+  static float lastLap = -1.0;
   if (packet->LastLap == lastLap) return;
   lastLap = packet->LastLap;
   lcd.setCursor(10, 2);
