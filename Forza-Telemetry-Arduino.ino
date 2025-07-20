@@ -3,6 +3,7 @@
 #include <EthernetUdp.h>
 #include <LiquidCrystal_I2C.h>
 #include "structs.cpp"
+#include "led_matrix.h"
 #include "settings.h"
 
 byte mac[] = MAC_ADDRESS;
@@ -29,6 +30,8 @@ void setup() {
   lcd.backlight();
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
+
+  setupMatrix();
 
   Ethernet.init();
   while (Ethernet.begin(mac) == 0) {
@@ -178,8 +181,7 @@ void renderGForce(Sled* packet) {
   y = packet->AccelerationY;
   z = packet->AccelerationZ;
   float size = sqrtf(sq(x) + sq(y) + sq(z)) / GFS;
-  lcd.setCursor(4, 3);
-  lcd.print(size);
+  _printNumber(size);
 }
 
 void renderDash(Dash* dash) {
@@ -251,4 +253,119 @@ void stepRpmLeds() {
   digitalWrite(rpmLeds[position], HIGH);
   digitalWrite(rpmLeds[RPM_LEDS_MAX - position], HIGH);
   lastUpdate = millis();
+}
+
+
+void setupMatrix() {
+  // Wake up the matrices
+  lc.shutdown(UNITS, false);
+  lc.shutdown(TENS, false);
+  lc.shutdown(HUNDREDS, false);
+  lc.shutdown(THOUSANDS, false);
+
+  // Set the brightness to a medium level
+  lc.setIntensity(UNITS, 0);
+  lc.setIntensity(TENS, 0);
+  lc.setIntensity(HUNDREDS, 0);
+  lc.setIntensity(THOUSANDS, 0);
+
+  // Clear the displays
+  lc.clearDisplay(UNITS);
+  lc.clearDisplay(TENS);
+  lc.clearDisplay(HUNDREDS);
+  lc.clearDisplay(THOUSANDS);
+}
+
+void _printNumber(float _newNumber) {
+  int _thousands = 0;
+  int _hundreds = 0;
+  int _tens = 0;
+  int _units = 0;
+
+  _newNumber = _newNumber * 100;
+
+  _thousands = int(_newNumber / 1000);
+  _hundreds = int(_newNumber / 100) % 10;
+  _tens = int(_newNumber / 10) % 10;
+  _units = int(_newNumber) % 10;
+
+  // Only run this routine if the number has changed
+  if (_newNumber != _oldNumber) {
+    // Only display THOUSANDS digit if it has changed
+    if (_thousands != _oldThousands) {
+      // Mask _thousands if it is zero
+      if (_thousands == 0) {
+        lc.clearDisplay(THOUSANDS);
+      } else {
+        _printDigit(THOUSANDS, _thousands);
+      }
+    }
+
+    // Only display the HUNDREDS if it has changed
+    if (_hundreds != _oldHundreds) {
+      // Mask _hundreds if it is zero
+      //if (( _thousands == 0 ) && ( _hundreds == 0 ))
+      //{
+      //  lc.clearDisplay(HUNDREDS);
+      //}
+      //else
+      {
+        _printDigit(HUNDREDS, _hundreds);
+      }
+    }
+    // Only display TENS digit if it has changed
+    if (_tens != _oldTens) {
+      // Mask _tens if it is zero
+      //if (( _hundreds == 0 ) && ( _tens == 0 ))
+      //{
+      //  lc.clearDisplay(TENS);
+      //}
+      //else
+      {
+        _printDigit(TENS, _tens);
+      }
+    }
+    // Only display the UNITS digit if it has changed
+    // The UNITS digit will always be displayed, even if zero
+    if (_units != _oldUnits) {
+      _printDigit(UNITS, _units);
+    }
+  } else {
+    _printCode();
+  }
+  _oldThousands = _thousands;
+  _oldHundreds = _hundreds;
+  _oldTens = _tens;
+  _oldUnits = _units;
+}
+
+void _printDigit(int _display, int _number) {
+  for (int _row = 2; _row < MAX_ROWS; _row++)  // Skip rows 0 and 1 for performance
+  {
+    for (int _column = 0; _column < MAX_COLUMNS; _column++) {
+      lc.setLed(_display, _row, _column, _displayPixels[_number][_row][_column]);
+    }
+  }
+  // Add the decimal place to the HUNDREDS matrix
+  if (_display == HUNDREDS) {
+    lc.setLed(_display, 0, 6, 1);
+  }
+}
+
+void _printCode() {
+  _printDigit(0, 10);
+  _printDigit(1, 10);
+  _printDigit(2, 10);
+  _printDigit(3, 10);
+}
+
+void _testdisplay() {
+  for (int _number = 0; _number < 10; _number++) {
+    for (int _row = 0; _row < 8; _row++) {
+      for (int _column = 0; _column < 8; _column++) {
+        lc.setLed(1, _row, _column, _displayPixels[_number][_row][_column]);
+      }
+    }
+    delay(50);
+  }
 }
