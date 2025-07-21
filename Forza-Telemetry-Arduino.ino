@@ -20,6 +20,9 @@ typedef enum {
 
 State state = WAITING;
 byte rpmLeds[] = RPM_LEDS;
+#ifdef GFORCE_LEDS
+byte gforceLeds[6] = GFORCE_LEDS;
+#endif
 
 void setup() {
   for (int i = RPM_LEDS_MAX; i >= 0; i--) {
@@ -182,6 +185,14 @@ void renderGForce(Sled* packet) {
   z = packet->AccelerationZ;
   float size = sqrtf(sq(x) + sq(y) + sq(z)) / GFS;
   _printNumber(size);
+#ifdef GFORCE_LEDS
+  digitalWrite(gforceLeds[0], x > 0);
+  digitalWrite(gforceLeds[1], x < 0);
+  digitalWrite(gforceLeds[2], y > 0);
+  digitalWrite(gforceLeds[3], y < 0);
+  digitalWrite(gforceLeds[4], z > 0);
+  digitalWrite(gforceLeds[5], z < 0);
+#endif
 }
 
 void renderDash(Dash* dash) {
