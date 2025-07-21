@@ -1,20 +1,13 @@
-// Include optional header for different MAC_ADDRESS and/or PORT
-#include "_conf.h"
-
 // Maximum size for received UDP packet
 #define BUFFER_SIZE 400
 // Milliseconds to wait at the start of each loop
 #define LOOP_DELAY 16
 
-#ifndef MAC_ADDRESS
 // MAC address
 #define MAC_ADDRESS \
   { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }
-#endif
-#ifndef PORT
 // Port to receive UDP packets
 #define PORT 8888
-#endif
 
 // RPM LED pin numbers
 #define RPM_LEDS \
@@ -26,3 +19,9 @@
 
 // Gravitational field strength (g) ms^-2
 #define GFS 9.81
+// Acceleration (G-force) direction LED pin numbers
+// #define GFORCE_LEDS {right, left, up, down, forward, backward}
+
+// Include header to optionally override default settings
+// Recommended to override MAC_ADDRESS and PORT
+#include "_conf.h"
