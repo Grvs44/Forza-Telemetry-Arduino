@@ -52,6 +52,7 @@ void setup() {
   lcd.setCursor(0, 2);
   lcd.print("Port ");
   lcd.print(PORT);
+  _printNumber(float(PORT) / 100.0);
 }
 
 void findEthernetIssue() {
@@ -154,6 +155,7 @@ char packetSizeChar(int packetSize) {
 void renderSled(Sled* packet) {
   if (state != RACE) {
     stepRpmLeds();
+    _printNumber(0.0);
     return;
   };
   renderRpm(packet);
