@@ -20,6 +20,9 @@ typedef enum {
 
 State state = WAITING;
 byte rpmLeds[] = RPM_LEDS;
+#ifdef GFORCE_LEDS
+byte gforceLeds[6] = GFORCE_LEDS;
+#endif
 
 void setup() {
   for (int i = RPM_LEDS_MAX; i >= 0; i--) {
@@ -49,6 +52,7 @@ void setup() {
   lcd.setCursor(0, 2);
   lcd.print("Port ");
   lcd.print(PORT);
+  _printNumber(float(PORT) / 100.0);
 }
 
 void findEthernetIssue() {
@@ -151,6 +155,7 @@ char packetSizeChar(int packetSize) {
 void renderSled(Sled* packet) {
   if (state != RACE) {
     stepRpmLeds();
+    _printNumber(0.0);
     return;
   };
   renderRpm(packet);
@@ -182,6 +187,14 @@ void renderGForce(Sled* packet) {
   z = packet->AccelerationZ;
   float size = sqrtf(sq(x) + sq(y) + sq(z)) / GFS;
   _printNumber(size);
+#ifdef GFORCE_LEDS
+  digitalWrite(gforceLeds[0], x > 0);
+  digitalWrite(gforceLeds[1], x < 0);
+  digitalWrite(gforceLeds[2], y > 0);
+  digitalWrite(gforceLeds[3], y < 0);
+  digitalWrite(gforceLeds[4], z > 0);
+  digitalWrite(gforceLeds[5], z < 0);
+#endif
 }
 
 void renderDash(Dash* dash) {
