@@ -249,9 +249,9 @@ void printLap(float lap) {
 
 void updateRpmLeds(Sled* packet) {
   float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
-  int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
-  int ledsOn = ((int)value) / (increment - 1);
-  int i = 0;
+  unsigned int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
+  unsigned int ledsOn = ((unsigned int)value) / (increment - 1);
+  unsigned int i = 0;
   while (i <= min(ledsOn, sizeof(rpmLeds) - 1)) {
     digitalWrite(rpmLeds[i++], HIGH);
   }
@@ -270,7 +270,7 @@ void stepLeds() {
 }
 
 void stepRpmLeds() {
-  static int position = 1;
+  static unsigned int position = 1;
   static bool direction = false;
 
   digitalWrite(rpmLeds[position], LOW);
