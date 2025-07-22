@@ -318,33 +318,39 @@ void setupMatrix() {
   lc.clearDisplay(THOUSANDS);
 }
 
-void _printNumber(float _newNumber) {
-  int _thousands = 0;
-  int _hundreds = 0;
-  int _tens = 0;
-  int _units = 0;
+void _printNumber(float newNumber) {
+  static int oldNumber = -1;
+  static int oldThousands = -1;
+  static int oldHundreds = -1;
+  static int oldTens = -1;
+  static int oldUnits = -1;
 
-  _newNumber = _newNumber * 100;
+  int thousands = 0;
+  int hundreds = 0;
+  int tens = 0;
+  int units = 0;
 
-  _thousands = int(_newNumber / 1000);
-  _hundreds = int(_newNumber / 100) % 10;
-  _tens = int(_newNumber / 10) % 10;
-  _units = int(_newNumber) % 10;
+  newNumber = newNumber * 100;
+
+  thousands = int(newNumber / 1000);
+  hundreds = int(newNumber / 100) % 10;
+  tens = int(newNumber / 10) % 10;
+  units = int(newNumber) % 10;
 
   // Only run this routine if the number has changed
-  if (_newNumber != _oldNumber) {
+  if (newNumber != oldNumber) {
     // Only display THOUSANDS digit if it has changed
-    if (_thousands != _oldThousands) {
+    if (thousands != oldThousands) {
       // Mask _thousands if it is zero
-      if (_thousands == 0) {
+      if (thousands == 0) {
         lc.clearDisplay(THOUSANDS);
       } else {
-        _printDigit(THOUSANDS, _thousands);
+        printDigit(THOUSANDS, thousands);
       }
     }
 
     // Only display the HUNDREDS if it has changed
-    if (_hundreds != _oldHundreds) {
+    if (hundreds != oldHundreds) {
       // Mask _hundreds if it is zero
       //if (( _thousands == 0 ) && ( _hundreds == 0 ))
       //{
@@ -352,11 +358,11 @@ void _printNumber(float _newNumber) {
       //}
       //else
       {
-        _printDigit(HUNDREDS, _hundreds);
+        printDigit(HUNDREDS, hundreds);
       }
     }
     // Only display TENS digit if it has changed
-    if (_tens != _oldTens) {
+    if (tens != oldTens) {
       // Mask _tens if it is zero
       //if (( _hundreds == 0 ) && ( _tens == 0 ))
       //{
@@ -364,48 +370,48 @@ void _printNumber(float _newNumber) {
       //}
       //else
       {
-        _printDigit(TENS, _tens);
+        printDigit(TENS, tens);
       }
     }
     // Only display the UNITS digit if it has changed
     // The UNITS digit will always be displayed, even if zero
-    if (_units != _oldUnits) {
-      _printDigit(UNITS, _units);
+    if (units != oldUnits) {
+      printDigit(UNITS, units);
     }
   } else {
-    _printCode();
+    printCode();
   }
-  _oldThousands = _thousands;
-  _oldHundreds = _hundreds;
-  _oldTens = _tens;
-  _oldUnits = _units;
+  oldThousands = thousands;
+  oldHundreds = hundreds;
+  oldTens = tens;
+  oldUnits = units;
 }
 
-void _printDigit(int _display, int _number) {
-  for (int _row = 2; _row < MAX_ROWS; _row++)  // Skip rows 0 and 1 for performance
+void printDigit(int display, int number) {
+  for (int row = 2; row < MAX_ROWS; row++)  // Skip rows 0 and 1 for performance
   {
-    for (int _column = 0; _column < MAX_COLUMNS; _column++) {
-      lc.setLed(_display, _row, _column, _displayPixels[_number][_row][_column]);
+    for (int column = 0; column < MAX_COLUMNS; column++) {
+      lc.setLed(display, row, column, displayPixels[number][row][column]);
     }
   }
   // Add the decimal place to the HUNDREDS matrix
-  if (_display == HUNDREDS) {
-    lc.setLed(_display, 0, 6, 1);
+  if (display == HUNDREDS) {
+    lc.setLed(display, 0, 6, 1);
   }
 }
 
-void _printCode() {
-  _printDigit(0, 10);
-  _printDigit(1, 10);
-  _printDigit(2, 10);
-  _printDigit(3, 10);
+void printCode() {
+  printDigit(0, 10);
+  printDigit(1, 10);
+  printDigit(2, 10);
+  printDigit(3, 10);
 }
 
-void _testdisplay() {
-  for (int _number = 0; _number < 10; _number++) {
-    for (int _row = 0; _row < 8; _row++) {
-      for (int _column = 0; _column < 8; _column++) {
-        lc.setLed(1, _row, _column, _displayPixels[_number][_row][_column]);
+void testdisplay() {
+  for (int number = 0; number < 10; number++) {
+    for (int row = 0; row < 8; row++) {
+      for (int column = 0; column < 8; column++) {
+        lc.setLed(1, row, column, displayPixels[number][row][column]);
       }
     }
     delay(50);

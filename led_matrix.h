@@ -27,15 +27,9 @@
 #define CLK_PIN 9
 #endif
 
-LedControl lc = LedControl(DIN_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
+LedControl lc(DIN_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
-int _oldNumber = -1;
-int _oldThousands = -1;
-int _oldHundreds = -1;
-int _oldTens = -1;
-int _oldUnits = -1;
-
-byte _displayPixels[11][8][8] = {
+byte displayPixels[11][8][8] = {
   { { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 1, 1, 1, 1, 1, 0, 0 },
@@ -135,8 +129,3 @@ byte _displayPixels[11][8][8] = {
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0 } }
 };
-
-void setupMatrix();
-void _printNumber();
-void _printDigit();
-void _printCode();
