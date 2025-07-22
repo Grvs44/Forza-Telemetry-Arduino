@@ -25,13 +25,8 @@ byte gforceLeds[6] = GFORCE_LEDS;
 #endif
 
 void setup() {
-  for (int i = RPM_LEDS_MAX; i >= 0; i--) {
-    pinMode(rpmLeds[i], OUTPUT);
-  }
-
-  for (int j = GFORCE_LEDS_MAX; j >=0; j-- ){
-    pinMode(gforceLeds[j], OUTPUT);
-  }
+  setOutputPins(rpmLeds, sizeof(rpmLeds));
+  setOutputPins(gforceLeds, sizeof(gforceLeds));
 
   lcd.init();
   lcd.backlight();
@@ -57,6 +52,12 @@ void setup() {
   lcd.print("Port ");
   lcd.print(PORT);
   _printNumber(float(PORT) / 100.0);
+}
+
+void setOutputPins(uint8_t* pins, unsigned int size) {
+  while (size > 0) {
+    pinMode(pins[--size], OUTPUT);
+  }
 }
 
 void findEthernetIssue() {
