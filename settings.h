@@ -21,5 +21,4 @@
 // #define GFORCE_LEDS {right, left, up, down, forward, backward}
 
 // Include header to optionally override default settings
-// Recommended to override MAC_ADDRESS and PORT
 #include "_conf.h"
