@@ -27,6 +27,9 @@ byte gforceLeds[6] = GFORCE_LEDS;
 void setup() {
   setOutputPins(rpmLeds, sizeof(rpmLeds));
   setOutputPins(gforceLeds, sizeof(gforceLeds));
+#ifdef PACKET_LED
+  pinMode(PACKET_LED, OUTPUT);
+#endif
 
   lcd.init();
   lcd.backlight();
@@ -93,7 +96,11 @@ void loop() {
   if (packetSize == 0) {
     if (state != RACE) stepRpmLeds();
     return;
-  } else if (packetSize != lastPacketSize) {
+  }
+#ifdef PACKET_LED
+  digitalWrite(PACKET_LED, HIGH);
+#endif
+  if (packetSize != lastPacketSize) {
     lastPacketSize = packetSize;
     lcd.setCursor(19, 3);
     lcd.print(packetSizeChar(packetSize));
@@ -145,6 +152,9 @@ void loop() {
       lcd.print("?");
       lcd.print(packetSize);
   }
+#ifdef PACKET_LED
+  digitalWrite(PACKET_LED, LOW);
+#endif
 }
 
 char packetSizeChar(int packetSize) {
@@ -239,9 +249,9 @@ void printLap(float lap) {
 
 void updateRpmLeds(Sled* packet) {
   float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
-  int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
-  int ledsOn = ((int)value) / (increment - 1);
-  int i = 0;
+  unsigned int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
+  unsigned int ledsOn = ((unsigned int)value) / (increment - 1);
+  unsigned int i = 0;
   while (i <= min(ledsOn, sizeof(rpmLeds) - 1)) {
     digitalWrite(rpmLeds[i++], HIGH);
   }
@@ -260,7 +270,7 @@ void stepLeds() {
 }
 
 void stepRpmLeds() {
-  static int position = 1;
+  static unsigned int position = 1;
   static bool direction = false;
 
   digitalWrite(rpmLeds[position], LOW);
