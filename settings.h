@@ -12,8 +12,6 @@
 // RPM LED pin numbers
 #define RPM_LEDS \
   { 2, 3, 5, 6, 7, 8 }
-// Number of RPM LEDs (length of above array) minus 1
-#define RPM_LEDS_MAX 5
 // Time in ms between each update in RPM step
 #define STEP_PERIOD 500
 

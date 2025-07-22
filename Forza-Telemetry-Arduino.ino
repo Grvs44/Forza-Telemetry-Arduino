@@ -239,13 +239,13 @@ void printLap(float lap) {
 
 void updateRpmLeds(Sled* packet) {
   float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
-  int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / (RPM_LEDS_MAX + 1);
+  int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
   int ledsOn = ((int)value) / (increment - 1);
   int i = 0;
-  while (i <= min(ledsOn, RPM_LEDS_MAX)) {
+  while (i <= min(ledsOn, sizeof(rpmLeds) - 1)) {
     digitalWrite(rpmLeds[i++], HIGH);
   }
-  while (i <= RPM_LEDS_MAX) {
+  while (i < sizeof(rpmLeds)) {
     digitalWrite(rpmLeds[i++], LOW);
   }
 }
@@ -257,9 +257,9 @@ void stepRpmLeds() {
 
   if (millis() < lastUpdate + STEP_PERIOD) return;
   digitalWrite(rpmLeds[position], LOW);
-  digitalWrite(rpmLeds[RPM_LEDS_MAX - position], LOW);
+  digitalWrite(rpmLeds[sizeof(rpmLeds) - 1 - position], LOW);
 
-  if (position == 0 || position == RPM_LEDS_MAX / 2) {
+  if (position == 0 || position == (sizeof(rpmLeds) - 1) / 2) {
     direction = !direction;
   }
 
@@ -269,7 +269,7 @@ void stepRpmLeds() {
     position--;
   }
   digitalWrite(rpmLeds[position], HIGH);
-  digitalWrite(rpmLeds[RPM_LEDS_MAX - position], HIGH);
+  digitalWrite(rpmLeds[sizeof(rpmLeds) - 1 - position], HIGH);
   lastUpdate = millis();
 }
 
