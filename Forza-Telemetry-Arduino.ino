@@ -159,7 +159,7 @@ char packetSizeChar(int packetSize) {
 
 void renderSled(Sled* packet) {
   if (state != RACE) {
-    stepRpmLeds();
+    stepLeds();
     _printNumber(0.0);
     return;
   };
@@ -250,12 +250,19 @@ void updateRpmLeds(Sled* packet) {
   }
 }
 
-void stepRpmLeds() {
-  static int position = 1;
-  static bool direction = false;
+void stepLeds() {
   static unsigned long lastUpdate = 0;
 
   if (millis() < lastUpdate + STEP_PERIOD) return;
+  stepRpmLeds();
+  stepGForceLeds();
+  lastUpdate = millis();
+}
+
+void stepRpmLeds() {
+  static int position = 1;
+  static bool direction = false;
+
   digitalWrite(rpmLeds[position], LOW);
   digitalWrite(rpmLeds[sizeof(rpmLeds) - 1 - position], LOW);
 
@@ -270,7 +277,14 @@ void stepRpmLeds() {
   }
   digitalWrite(rpmLeds[position], HIGH);
   digitalWrite(rpmLeds[sizeof(rpmLeds) - 1 - position], HIGH);
-  lastUpdate = millis();
+}
+
+void stepGForceLeds() {
+  static unsigned int position = sizeof(gforceLeds) - 1;
+
+  digitalWrite(gforceLeds[position], LOW);
+  position = (position + 1) % sizeof(gforceLeds);
+  digitalWrite(gforceLeds[position], HIGH);
 }
 
 
