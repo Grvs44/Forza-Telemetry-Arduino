@@ -29,6 +29,10 @@ void setup() {
     pinMode(rpmLeds[i], OUTPUT);
   }
 
+  for (int j = GFORCE_LEDS_MAX; j >=0; j-- ){
+    pinMode(gforceLeds[j], OUTPUT);
+  }
+
   lcd.init();
   lcd.backlight();
   lcd.setCursor(0, 0);
