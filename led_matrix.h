@@ -35,7 +35,7 @@ int _oldHundreds = -1;
 int _oldTens = -1;
 int _oldUnits = -1;
 
-int _displayPixels[11][8][8] = {
+byte _displayPixels[11][8][8] = {
   { { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 1, 1, 1, 1, 1, 0, 0 },
