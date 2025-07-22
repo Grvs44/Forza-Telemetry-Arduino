@@ -27,6 +27,9 @@ byte gforceLeds[6] = GFORCE_LEDS;
 void setup() {
   setOutputPins(rpmLeds, sizeof(rpmLeds));
   setOutputPins(gforceLeds, sizeof(gforceLeds));
+#ifdef PACKET_LED
+  pinMode(PACKET_LED, OUTPUT);
+#endif
 
   lcd.init();
   lcd.backlight();
@@ -93,7 +96,11 @@ void loop() {
   if (packetSize == 0) {
     if (state != RACE) stepRpmLeds();
     return;
-  } else if (packetSize != lastPacketSize) {
+  }
+#ifdef PACKET_LED
+  digitalWrite(PACKET_LED, HIGH);
+#endif
+  if (packetSize != lastPacketSize) {
     lastPacketSize = packetSize;
     lcd.setCursor(19, 3);
     lcd.print(packetSizeChar(packetSize));
@@ -145,6 +152,9 @@ void loop() {
       lcd.print("?");
       lcd.print(packetSize);
   }
+#ifdef PACKET_LED
+  digitalWrite(PACKET_LED, LOW);
+#endif
 }
 
 char packetSizeChar(int packetSize) {

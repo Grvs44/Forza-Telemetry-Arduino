@@ -2,6 +2,8 @@
 #define BUFFER_SIZE 400
 // Milliseconds to wait at the start of each loop
 #define LOOP_DELAY 16
+// Pin number for LED to show when packet is being processed
+// #define PACKET_LED 13
 
 // MAC address
 #define MAC_ADDRESS \
