@@ -6,6 +6,9 @@
 #include "led_matrix.h"
 #include "settings.h"
 
+// Round acceleration value
+#define roundAcc(x) roundf(x * 100.0) / 100.0
+
 byte mac[] = MAC_ADDRESS;
 char packetBuffer[BUFFER_SIZE];
 EthernetUDP Udp;
@@ -186,29 +189,25 @@ void renderRpm(Sled* packet) {
 }
 
 void renderGForce(Sled* packet) {
-  static float x = -1.0;
-  static float y = -1.0;
-  static float z = -1.0;
+  static float a[] = { -1.0, -1.0, -1.0 };
 
   if (
-    packet->AccelerationX == x
-    && packet->AccelerationY == y
-    && packet->AccelerationZ == z) {
+    packet->AccelerationX == a[0]
+    && packet->AccelerationY == a[1]
+    && packet->AccelerationZ == a[2]) {
     return;
   }
 
-  x = packet->AccelerationX;
-  y = packet->AccelerationY;
-  z = packet->AccelerationZ;
-  float size = sqrtf(sq(x) + sq(y) + sq(z)) / GFS;
+  a[0] = roundAcc(packet->AccelerationX);
+  a[1] = roundAcc(packet->AccelerationY);
+  a[2] = roundAcc(packet->AccelerationZ);
+  float size = sqrtf(sq(a[0]) + sq(a[1]) + sq(a[2])) / GFS;
   _printNumber(size);
 #ifdef GFORCE_LEDS
-  digitalWrite(gforceLeds[0], x > 0);
-  digitalWrite(gforceLeds[1], x < 0);
-  digitalWrite(gforceLeds[2], y > 0);
-  digitalWrite(gforceLeds[3], y < 0);
-  digitalWrite(gforceLeds[4], z > 0);
-  digitalWrite(gforceLeds[5], z < 0);
+  for (int i = 2; i >= 0; i--) {
+    digitalWrite(gforceLeds[i * 2], a[i] > 0);
+    digitalWrite(gforceLeds[(i * 2) + 1], a[i] < 0);
+  }
 #endif
 }
 
