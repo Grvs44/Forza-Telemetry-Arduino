@@ -3,8 +3,8 @@
 #include <EthernetUdp.h>
 #include <LiquidCrystal_I2C.h>
 #include "structs.cpp"
-#include "led_matrix.h"
 #include "settings.h"
+#include "led_matrix.h"
 
 // Round acceleration value
 #define roundAcc(x) roundf(x * 100.0) / 100.0
@@ -22,14 +22,20 @@ typedef enum {
 } State;
 
 State state = WAITING;
+#ifdef RPM_LEDS
 byte rpmLeds[] = RPM_LEDS;
+#endif
 #ifdef GFORCE_LEDS
 byte gforceLeds[6] = GFORCE_LEDS;
 #endif
 
 void setup() {
+#ifdef RPM_LEDS
   setOutputPins(rpmLeds, sizeof(rpmLeds));
+#endif
+#ifdef GFORCE_LEDS
   setOutputPins(gforceLeds, sizeof(gforceLeds));
+#endif
 #ifdef PACKET_LED
   pinMode(PACKET_LED, OUTPUT);
 #endif
@@ -39,7 +45,9 @@ void setup() {
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
 
+#ifdef GFORCE_LEDS
   setupMatrix();
+#endif
 
   Ethernet.init();
   while (Ethernet.begin(mac) == 0) {
@@ -172,12 +180,18 @@ char packetSizeChar(int packetSize) {
 
 void renderSled(Sled* packet) {
   if (state != RACE) {
+#if defined(RPM_LEDS) || defined(GFORCE_LEDS)
     stepLeds();
+#endif
     _printNumber(0.0);
     return;
   };
+#ifdef RPM_LEDS
   renderRpm(packet);
+#endif
+#ifdef GFORCE_LEDS
   renderGForce(packet);
+#endif
 }
 
 void renderRpm(Sled* packet) {
@@ -263,8 +277,12 @@ void stepLeds() {
   static unsigned long lastUpdate = 0;
 
   if (millis() < lastUpdate + STEP_PERIOD) return;
+#ifdef RPM_LEDS
   stepRpmLeds();
+#endif
+#ifdef GFORCE_LEDS
   stepGForceLeds();
+#endif
   lastUpdate = millis();
 }
 

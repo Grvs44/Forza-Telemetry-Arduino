@@ -27,6 +27,7 @@
 #define CLK_PIN 9
 #endif
 
+#ifdef GFORCE_LEDS
 LedControl lc(DIN_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
 
 byte displayPixels[11][8][8] = {
@@ -129,3 +130,4 @@ byte displayPixels[11][8][8] = {
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0 } }
 };
+#endif

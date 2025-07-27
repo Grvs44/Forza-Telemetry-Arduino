@@ -12,8 +12,7 @@
 #define PORT 8888
 
 // RPM LED pin numbers
-#define RPM_LEDS \
-  { 2, 3, 5, 6, 7, 8 }
+// #define RPM_LEDS { 2, 3, 5, 6, 7, 8 }
 // Time in ms between each update in RPM step
 #define STEP_PERIOD 500
 
