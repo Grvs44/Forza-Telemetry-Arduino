@@ -65,7 +65,9 @@ void setup() {
   lcd.setCursor(0, 2);
   lcd.print("Port ");
   lcd.print(PORT);
+#ifdef GFORCE_LEDS
   _printNumber(float(PORT) / 100.0);
+#endif
 }
 
 void setOutputPins(uint8_t* pins, unsigned int size) {
@@ -105,7 +107,9 @@ void loop() {
   delay(LOOP_DELAY);
   int packetSize = Udp.parsePacket();
   if (packetSize == 0) {
+#ifdef RPM_LEDS
     if (state != RACE) stepRpmLeds();
+#endif
     return;
   }
 #ifdef PACKET_LED
@@ -183,7 +187,9 @@ void renderSled(Sled* packet) {
 #if defined(RPM_LEDS) || defined(GFORCE_LEDS)
     stepLeds();
 #endif
+#ifdef GFORCE_LEDS
     _printNumber(0.0);
+#endif
     return;
   };
 #ifdef RPM_LEDS
@@ -194,6 +200,7 @@ void renderSled(Sled* packet) {
 #endif
 }
 
+#ifdef RPM_LEDS
 void renderRpm(Sled* packet) {
   updateRpmLeds(packet);
   lcd.setCursor(5, 0);
@@ -201,7 +208,9 @@ void renderRpm(Sled* packet) {
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
   lcd.print(buffer);
 }
+#endif
 
+#ifdef GFORCE_LEDS
 void renderGForce(Sled* packet) {
   static float a[] = { -1.0, -1.0, -1.0 };
 
@@ -224,6 +233,7 @@ void renderGForce(Sled* packet) {
   }
 #endif
 }
+#endif
 
 void renderDash(Dash* dash) {
   renderBestLap(dash);
@@ -260,6 +270,7 @@ void printLap(float lap) {
   lcd.print(secs);
 }
 
+#ifdef RPM_LEDS
 void updateRpmLeds(Sled* packet) {
   float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
   unsigned int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
@@ -272,7 +283,9 @@ void updateRpmLeds(Sled* packet) {
     digitalWrite(rpmLeds[i++], LOW);
   }
 }
+#endif
 
+#if defined(RPM_LEDS) || defined(GFORCE_LEDS)
 void stepLeds() {
   static unsigned long lastUpdate = 0;
 
@@ -285,7 +298,9 @@ void stepLeds() {
 #endif
   lastUpdate = millis();
 }
+#endif
 
+#ifdef RPM_LEDS
 void stepRpmLeds() {
   static unsigned int position = 1;
   static bool direction = false;
@@ -305,7 +320,9 @@ void stepRpmLeds() {
   digitalWrite(rpmLeds[position], HIGH);
   digitalWrite(rpmLeds[sizeof(rpmLeds) - 1 - position], HIGH);
 }
+#endif
 
+#ifdef GFORCE_LEDS
 void stepGForceLeds() {
   static unsigned int position = sizeof(gforceLeds) - 1;
 
@@ -313,7 +330,6 @@ void stepGForceLeds() {
   position = (position + 1) % sizeof(gforceLeds);
   digitalWrite(gforceLeds[position], HIGH);
 }
-
 
 void setupMatrix() {
   // Wake up the matrices
@@ -434,3 +450,4 @@ void testdisplay() {
     delay(50);
   }
 }
+#endif
