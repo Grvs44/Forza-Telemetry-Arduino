@@ -66,7 +66,7 @@ void setup() {
   lcd.print("Port ");
   lcd.print(PORT);
 #ifdef GFORCE_LEDS
-  _printNumber(float(PORT) / 100.0);
+  printNumber(float(PORT) / 100.0);
 #endif
 }
 
@@ -188,7 +188,7 @@ void renderSled(Sled* packet) {
     stepLeds();
 #endif
 #ifdef GFORCE_LEDS
-    _printNumber(0.0);
+    printNumber(0.0);
 #endif
     return;
   };
@@ -225,7 +225,7 @@ void renderGForce(Sled* packet) {
   a[1] = roundAcc(packet->AccelerationY);
   a[2] = roundAcc(packet->AccelerationZ);
   float size = sqrtf(sq(a[0]) + sq(a[1]) + sq(a[2])) / GFS;
-  _printNumber(size);
+  printNumber(size);
 #ifdef GFORCE_LEDS
   for (int i = 2; i >= 0; i--) {
     digitalWrite(gforceLeds[i * 2], a[i] > 0);
@@ -351,7 +351,7 @@ void setupMatrix() {
   lc.clearDisplay(THOUSANDS);
 }
 
-void _printNumber(float newNumber) {
+void printNumber(float newNumber) {
   static int oldNumber = -1;
   static int oldThousands = -1;
   static int oldHundreds = -1;
