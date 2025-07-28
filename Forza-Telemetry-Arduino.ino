@@ -3,8 +3,8 @@
 #include <EthernetUdp.h>
 #include <LiquidCrystal_I2C.h>
 #include "structs.cpp"
-#include "led_matrix.h"
 #include "settings.h"
+#include "led_matrix.h"
 
 // Round acceleration value
 #define roundAcc(x) roundf(x * 100.0) / 100.0
@@ -22,14 +22,20 @@ typedef enum {
 } State;
 
 State state = WAITING;
+#ifdef RPM_LEDS
 byte rpmLeds[] = RPM_LEDS;
+#endif
 #ifdef GFORCE_LEDS
 byte gforceLeds[6] = GFORCE_LEDS;
 #endif
 
 void setup() {
+#ifdef RPM_LEDS
   setOutputPins(rpmLeds, sizeof(rpmLeds));
+#endif
+#ifdef GFORCE_LEDS
   setOutputPins(gforceLeds, sizeof(gforceLeds));
+#endif
 #ifdef PACKET_LED
   pinMode(PACKET_LED, OUTPUT);
 #endif
@@ -39,7 +45,9 @@ void setup() {
   lcd.setCursor(0, 0);
   lcd.print("Connecting...");
 
+#ifdef GFORCE_LEDS
   setupMatrix();
+#endif
 
   Ethernet.init();
   while (Ethernet.begin(mac) == 0) {
@@ -57,7 +65,9 @@ void setup() {
   lcd.setCursor(0, 2);
   lcd.print("Port ");
   lcd.print(PORT);
-  _printNumber(float(PORT) / 100.0);
+#ifdef GFORCE_LEDS
+  printNumber(float(PORT) / 100.0);
+#endif
 }
 
 void setOutputPins(uint8_t* pins, unsigned int size) {
@@ -97,7 +107,9 @@ void loop() {
   delay(LOOP_DELAY);
   int packetSize = Udp.parsePacket();
   if (packetSize == 0) {
+#ifdef RPM_LEDS
     if (state != RACE) stepRpmLeds();
+#endif
     return;
   }
 #ifdef PACKET_LED
@@ -172,14 +184,23 @@ char packetSizeChar(int packetSize) {
 
 void renderSled(Sled* packet) {
   if (state != RACE) {
+#if defined(RPM_LEDS) || defined(GFORCE_LEDS)
     stepLeds();
-    _printNumber(0.0);
+#endif
+#ifdef GFORCE_LEDS
+    printNumber(0.0);
+#endif
     return;
   };
+#ifdef RPM_LEDS
   renderRpm(packet);
+#endif
+#ifdef GFORCE_LEDS
   renderGForce(packet);
+#endif
 }
 
+#ifdef RPM_LEDS
 void renderRpm(Sled* packet) {
   updateRpmLeds(packet);
   lcd.setCursor(5, 0);
@@ -187,7 +208,9 @@ void renderRpm(Sled* packet) {
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
   lcd.print(buffer);
 }
+#endif
 
+#ifdef GFORCE_LEDS
 void renderGForce(Sled* packet) {
   static float a[] = { -1.0, -1.0, -1.0 };
 
@@ -202,7 +225,7 @@ void renderGForce(Sled* packet) {
   a[1] = roundAcc(packet->AccelerationY);
   a[2] = roundAcc(packet->AccelerationZ);
   float size = sqrtf(sq(a[0]) + sq(a[1]) + sq(a[2])) / GFS;
-  _printNumber(size);
+  printNumber(size);
 #ifdef GFORCE_LEDS
   for (int i = 2; i >= 0; i--) {
     digitalWrite(gforceLeds[i * 2], a[i] > 0);
@@ -210,6 +233,7 @@ void renderGForce(Sled* packet) {
   }
 #endif
 }
+#endif
 
 void renderDash(Dash* dash) {
   renderBestLap(dash);
@@ -246,6 +270,7 @@ void printLap(float lap) {
   lcd.print(secs);
 }
 
+#ifdef RPM_LEDS
 void updateRpmLeds(Sled* packet) {
   float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
   unsigned int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
@@ -258,16 +283,24 @@ void updateRpmLeds(Sled* packet) {
     digitalWrite(rpmLeds[i++], LOW);
   }
 }
+#endif
 
+#if defined(RPM_LEDS) || defined(GFORCE_LEDS)
 void stepLeds() {
   static unsigned long lastUpdate = 0;
 
   if (millis() < lastUpdate + STEP_PERIOD) return;
+#ifdef RPM_LEDS
   stepRpmLeds();
+#endif
+#ifdef GFORCE_LEDS
   stepGForceLeds();
+#endif
   lastUpdate = millis();
 }
+#endif
 
+#ifdef RPM_LEDS
 void stepRpmLeds() {
   static unsigned int position = 1;
   static bool direction = false;
@@ -287,7 +320,9 @@ void stepRpmLeds() {
   digitalWrite(rpmLeds[position], HIGH);
   digitalWrite(rpmLeds[sizeof(rpmLeds) - 1 - position], HIGH);
 }
+#endif
 
+#ifdef GFORCE_LEDS
 void stepGForceLeds() {
   static unsigned int position = sizeof(gforceLeds) - 1;
 
@@ -295,7 +330,6 @@ void stepGForceLeds() {
   position = (position + 1) % sizeof(gforceLeds);
   digitalWrite(gforceLeds[position], HIGH);
 }
-
 
 void setupMatrix() {
   // Wake up the matrices
@@ -317,7 +351,7 @@ void setupMatrix() {
   lc.clearDisplay(THOUSANDS);
 }
 
-void _printNumber(float newNumber) {
+void printNumber(float newNumber) {
   static int oldNumber = -1;
   static int oldThousands = -1;
   static int oldHundreds = -1;
@@ -350,27 +384,11 @@ void _printNumber(float newNumber) {
 
     // Only display the HUNDREDS if it has changed
     if (hundreds != oldHundreds) {
-      // Mask _hundreds if it is zero
-      //if (( _thousands == 0 ) && ( _hundreds == 0 ))
-      //{
-      //  lc.clearDisplay(HUNDREDS);
-      //}
-      //else
-      {
-        printDigit(HUNDREDS, hundreds);
-      }
+      printDigit(HUNDREDS, hundreds);
     }
     // Only display TENS digit if it has changed
     if (tens != oldTens) {
-      // Mask _tens if it is zero
-      //if (( _hundreds == 0 ) && ( _tens == 0 ))
-      //{
-      //  lc.clearDisplay(TENS);
-      //}
-      //else
-      {
-        printDigit(TENS, tens);
-      }
+      printDigit(TENS, tens);
     }
     // Only display the UNITS digit if it has changed
     // The UNITS digit will always be displayed, even if zero
@@ -405,14 +423,4 @@ void printCode() {
   printDigit(2, 10);
   printDigit(3, 10);
 }
-
-void testdisplay() {
-  for (int number = 0; number < 10; number++) {
-    for (int row = 0; row < 8; row++) {
-      for (int column = 0; column < 8; column++) {
-        lc.setLed(1, row, column, displayPixels[number][row][column]);
-      }
-    }
-    delay(50);
-  }
-}
+#endif

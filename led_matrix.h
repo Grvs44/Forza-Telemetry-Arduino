@@ -1,10 +1,9 @@
-#define LED_MATRIX
 #include <LedControl.h>
 
-#define MEGA TRUE  // Using the Mega2560 board
-
-#define TRUE 1
-#define FALSE 0
+#ifdef GFORCE_LEDS
+// Arduino board types
+#define UNO 1
+#define MEGA 2
 
 #define THOUSANDS 3
 #define HUNDREDS 2
@@ -16,15 +15,17 @@
 
 #define MAX_DEVICES 4
 
-#ifdef UNO  // Define pins for the Arduino UNO board
+// Define pins for the Arduino board
+#if BOARD == UNO
 #define CS_PIN 10
 #define CLK_PIN 13
 #define DIN_PIN 11
-#endif
-#ifdef MEGA
+#elif BOARD == MEGA
 #define CS_PIN 47
 #define DIN_PIN 46
 #define CLK_PIN 9
+#else
+#error BOARD not supported (must be UNO or MEGA)
 #endif
 
 LedControl lc(DIN_PIN, CLK_PIN, CS_PIN, MAX_DEVICES);
@@ -129,3 +130,4 @@ byte displayPixels[11][8][8] = {
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0 } }
 };
+#endif
