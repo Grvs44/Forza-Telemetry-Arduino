@@ -384,27 +384,11 @@ void printNumber(float newNumber) {
 
     // Only display the HUNDREDS if it has changed
     if (hundreds != oldHundreds) {
-      // Mask _hundreds if it is zero
-      //if (( _thousands == 0 ) && ( _hundreds == 0 ))
-      //{
-      //  lc.clearDisplay(HUNDREDS);
-      //}
-      //else
-      {
-        printDigit(HUNDREDS, hundreds);
-      }
+      printDigit(HUNDREDS, hundreds);
     }
     // Only display TENS digit if it has changed
     if (tens != oldTens) {
-      // Mask _tens if it is zero
-      //if (( _hundreds == 0 ) && ( _tens == 0 ))
-      //{
-      //  lc.clearDisplay(TENS);
-      //}
-      //else
-      {
-        printDigit(TENS, tens);
-      }
+      printDigit(TENS, tens);
     }
     // Only display the UNITS digit if it has changed
     // The UNITS digit will always be displayed, even if zero
@@ -438,16 +422,5 @@ void printCode() {
   printDigit(1, 10);
   printDigit(2, 10);
   printDigit(3, 10);
-}
-
-void testdisplay() {
-  for (int number = 0; number < 10; number++) {
-    for (int row = 0; row < 8; row++) {
-      for (int column = 0; column < 8; column++) {
-        lc.setLed(1, row, column, displayPixels[number][row][column]);
-      }
-    }
-    delay(50);
-  }
 }
 #endif
