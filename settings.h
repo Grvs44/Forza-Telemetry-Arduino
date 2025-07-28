@@ -18,6 +18,8 @@
 
 // Gravitational field strength (g) ms^-2
 #define GFS 9.81
+// Board type (UNO or MEGA)
+// #define BOARD UNO
 // Acceleration (G-force) direction LED pin numbers
 // #define GFORCE_LEDS {right, left, up, down, forward, backward}
 
