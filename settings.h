@@ -15,6 +15,8 @@
 // #define RPM_LEDS { 2, 3, 5, 6, 7, 8 }
 // Time in ms between each update in RPM step
 #define STEP_PERIOD 500
+// Display RPM on LCD
+// #define DISPLAY_RPM
 
 // Gravitational field strength (g) ms^-2
 #define GFS 9.81
