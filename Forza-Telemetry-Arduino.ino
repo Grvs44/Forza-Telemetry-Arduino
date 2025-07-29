@@ -134,7 +134,12 @@ void loop() {
     state = newState;
     lcd.setCursor(0, 0);
     if (state) {
+#ifdef DISPLAY_RPM
       lcd.print("RPM:                ");
+#else
+      lcd.setCursor(9, 0);
+      lcd.print("race");
+#endif
     } else {
       lcd.print("      In menu       ");
     }
@@ -193,16 +198,18 @@ void renderSled(Sled* packet) {
     return;
   };
 #ifdef RPM_LEDS
-  renderRpm(packet);
+  updateRpmLeds(packet);
+#endif
+#ifdef DISPLAY_RPM
+  displayRpm(packet);
 #endif
 #ifdef GFORCE_LEDS
   renderGForce(packet);
 #endif
 }
 
-#ifdef RPM_LEDS
-void renderRpm(Sled* packet) {
-  updateRpmLeds(packet);
+#ifdef DISPLAY_RPM
+void displayRpm(Sled* packet) {
   lcd.setCursor(5, 0);
   char buffer[8];
   dtostrf(packet->CurrentEngineRpm, 5, 0, buffer);
