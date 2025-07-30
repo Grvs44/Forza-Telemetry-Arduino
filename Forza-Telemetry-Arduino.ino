@@ -4,7 +4,9 @@
 #include <LiquidCrystal_I2C.h>
 #include "structs.cpp"
 #include "settings.h"
+#ifdef GFORCE_LEDS
 #include "led_matrix.h"
+#endif
 
 // Round acceleration value
 #define roundAcc(x) roundf(x * 100.0) / 100.0
@@ -66,7 +68,10 @@ void setup() {
   lcd.print("Port ");
   lcd.print(PORT);
 #ifdef GFORCE_LEDS
-  printNumber(float(PORT) / 100.0);
+  printDigit(THOUSANDS, PORT / 1000);
+  printDigit(HUNDREDS, PORT / 100 % 10);
+  printDigit(TENS, PORT / 10 % 10);
+  printDigit(UNITS, PORT % 10);
 #endif
 }
 
@@ -193,7 +198,7 @@ void renderSled(Sled* packet) {
     stepLeds();
 #endif
 #ifdef GFORCE_LEDS
-    printNumber(0.0);
+    displayGForce(0.0);
 #endif
     return;
   };
@@ -232,7 +237,7 @@ void renderGForce(Sled* packet) {
   a[1] = roundAcc(packet->AccelerationY);
   a[2] = roundAcc(packet->AccelerationZ);
   float size = sqrtf(sq(a[0]) + sq(a[1]) + sq(a[2])) / GFS;
-  printNumber(size);
+  displayGForce(size);
 #ifdef GFORCE_LEDS
   for (int i = 2; i >= 0; i--) {
     digitalWrite(gforceLeds[i * 2], a[i] > 0);
@@ -358,57 +363,34 @@ void setupMatrix() {
   lc.clearDisplay(THOUSANDS);
 }
 
-void printNumber(float newNumber) {
-  static int oldNumber = -1;
-  static int oldThousands = -1;
-  static int oldHundreds = -1;
-  static int oldTens = -1;
-  static int oldUnits = -1;
+void displayGForce(float value) {
+  static float currentValue = -1.0;
+  // {hundredths, tenths, units, tens}
+  static int currentDisplay[] = { 0, 0, 0, 0 };
 
-  int thousands = 0;
-  int hundreds = 0;
-  int tens = 0;
-  int units = 0;
+  if (value == currentValue) return;
 
-  newNumber = newNumber * 100;
+  int newDisplay[] = {
+    int(value * 100) % 10,
+    int(value * 10) % 10,
+    int(value) % 10,
+    int(value / 10)
+  };
 
-  thousands = int(newNumber / 1000);
-  hundreds = int(newNumber / 100) % 10;
-  tens = int(newNumber / 10) % 10;
-  units = int(newNumber) % 10;
-
-  // Only run this routine if the number has changed
-  if (newNumber != oldNumber) {
-    // Only display THOUSANDS digit if it has changed
-    if (thousands != oldThousands) {
-      // Mask _thousands if it is zero
-      if (thousands == 0) {
-        lc.clearDisplay(THOUSANDS);
-      } else {
-        printDigit(THOUSANDS, thousands);
-      }
+  for (int i = 3; i >= 0; i--) {
+    if (newDisplay[i] == currentDisplay[i]) continue;
+    currentDisplay[i] = newDisplay[i];
+    if (i == THOUSANDS && newDisplay[i] == 0) {
+      lc.clearDisplay(THOUSANDS);
+      continue;
+    } else {
+      printDigit(i, newDisplay[i]);
     }
-
-    // Only display the HUNDREDS if it has changed
-    if (hundreds != oldHundreds) {
-      printDigit(HUNDREDS, hundreds);
+    if (i == HUNDREDS) {
+      // Add decimal point
+      lc.setLed(HUNDREDS, 0, 6, 1);
     }
-    // Only display TENS digit if it has changed
-    if (tens != oldTens) {
-      printDigit(TENS, tens);
-    }
-    // Only display the UNITS digit if it has changed
-    // The UNITS digit will always be displayed, even if zero
-    if (units != oldUnits) {
-      printDigit(UNITS, units);
-    }
-  } else {
-    printCode();
   }
-  oldThousands = thousands;
-  oldHundreds = hundreds;
-  oldTens = tens;
-  oldUnits = units;
 }
 
 void printDigit(int display, int number) {
@@ -417,10 +399,6 @@ void printDigit(int display, int number) {
     for (int column = 0; column < MAX_COLUMNS; column++) {
       lc.setLed(display, row, column, displayPixels[number][row][column]);
     }
-  }
-  // Add the decimal place to the HUNDREDS matrix
-  if (display == HUNDREDS) {
-    lc.setLed(display, 0, 6, 1);
   }
 }
 
