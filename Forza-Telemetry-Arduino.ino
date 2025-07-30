@@ -66,7 +66,10 @@ void setup() {
   lcd.print("Port ");
   lcd.print(PORT);
 #ifdef GFORCE_LEDS
-  printNumber(float(PORT) / 100.0);
+  printDigit(THOUSANDS, PORT / 1000);
+  printDigit(HUNDREDS, PORT / 100 % 10);
+  printDigit(TENS, PORT / 10 % 10);
+  printDigit(UNITS, PORT % 10);
 #endif
 }
 
@@ -392,6 +395,8 @@ void printNumber(float newNumber) {
     // Only display the HUNDREDS if it has changed
     if (hundreds != oldHundreds) {
       printDigit(HUNDREDS, hundreds);
+      // Add decimal point
+      lc.setLed(HUNDREDS, 0, 6, 1);
     }
     // Only display TENS digit if it has changed
     if (tens != oldTens) {
@@ -417,10 +422,6 @@ void printDigit(int display, int number) {
     for (int column = 0; column < MAX_COLUMNS; column++) {
       lc.setLed(display, row, column, displayPixels[number][row][column]);
     }
-  }
-  // Add the decimal place to the HUNDREDS matrix
-  if (display == HUNDREDS) {
-    lc.setLed(display, 0, 6, 1);
   }
 }
 
