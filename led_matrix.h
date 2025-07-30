@@ -1,6 +1,5 @@
 #include <LedControl.h>
 
-#ifdef GFORCE_LEDS
 // Arduino board types
 #define UNO 1
 #define MEGA 2
@@ -130,4 +129,3 @@ byte displayPixels[11][8][8] = {
     { 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 0, 0, 0, 0, 0, 0, 0 } }
 };
-#endif

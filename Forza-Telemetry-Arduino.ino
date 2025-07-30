@@ -4,7 +4,9 @@
 #include <LiquidCrystal_I2C.h>
 #include "structs.cpp"
 #include "settings.h"
+#ifdef GFORCE_LEDS
 #include "led_matrix.h"
+#endif
 
 // Round acceleration value
 #define roundAcc(x) roundf(x * 100.0) / 100.0
