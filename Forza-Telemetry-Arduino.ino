@@ -68,10 +68,10 @@ void setup() {
   lcd.print("Port ");
   lcd.print(PORT);
 #ifdef GFORCE_LEDS
-  printDigit(THOUSANDS, PORT / 1000);
-  printDigit(HUNDREDS, PORT / 100 % 10);
-  printDigit(TENS, PORT / 10 % 10);
-  printDigit(UNITS, PORT % 10);
+  printMatrixDigit(THOUSANDS, PORT / 1000);
+  printMatrixDigit(HUNDREDS, PORT / 100 % 10);
+  printMatrixDigit(TENS, PORT / 10 % 10);
+  printMatrixDigit(UNITS, PORT % 10);
 #endif
 }
 
@@ -198,7 +198,7 @@ void renderSled(Sled* packet) {
     stepLeds();
 #endif
 #ifdef GFORCE_LEDS
-    displayGForce(0.0);
+    displayNoGForce();
 #endif
     return;
   };
@@ -384,7 +384,7 @@ void displayGForce(float value) {
       lc.clearDisplay(THOUSANDS);
       continue;
     } else {
-      printDigit(i, newDisplay[i]);
+      printMatrixDigit(i, newDisplay[i]);
     }
     if (i == HUNDREDS) {
       // Add decimal point
@@ -393,7 +393,7 @@ void displayGForce(float value) {
   }
 }
 
-void printDigit(int display, int number) {
+void printMatrixDigit(int display, int number) {
   for (int row = 2; row < MAX_ROWS; row++)  // Skip rows 0 and 1 for performance
   {
     for (int column = 0; column < MAX_COLUMNS; column++) {
@@ -402,10 +402,10 @@ void printDigit(int display, int number) {
   }
 }
 
-void printCode() {
-  printDigit(0, 10);
-  printDigit(1, 10);
-  printDigit(2, 10);
-  printDigit(3, 10);
+void displayNoGForce() {
+  printMatrixDigit(0, 10);
+  printMatrixDigit(1, 10);
+  printMatrixDigit(2, 10);
+  printMatrixDigit(3, 10);
 }
 #endif
