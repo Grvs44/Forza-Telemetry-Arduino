@@ -112,8 +112,8 @@ void loop() {
   delay(LOOP_DELAY);
   int packetSize = Udp.parsePacket();
   if (packetSize == 0) {
-#ifdef RPM_LEDS
-    if (state != RACE) stepRpmLeds();
+#if defined(RPM_LEDS) || defined(GFORCE_LEDS)
+    if (state != RACE) stepLeds();
 #endif
     return;
   }
