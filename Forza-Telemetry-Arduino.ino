@@ -9,7 +9,7 @@
 #endif
 
 // Round acceleration value
-#define roundAcc(x) roundf(x * 100.0) / 100.0
+#define roundAcc(x) roundf(x * 10.0) / 10.0
 
 byte mac[] = MAC_ADDRESS;
 char packetBuffer[BUFFER_SIZE];
