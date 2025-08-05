@@ -67,7 +67,7 @@ void setup() {
   lcd.setCursor(0, 2);
   lcd.print("Port ");
   lcd.print(PORT);
-  lcd.setCursor(0, 4);
+  lcd.setCursor(0, 3);
   lcd.print(VERSION);
 #ifdef GFORCE_LEDS
   printMatrixDigit(THOUSANDS, PORT / 1000);
@@ -124,7 +124,7 @@ void loop() {
 #endif
   if (packetSize != lastPacketSize) {
     lastPacketSize = packetSize;
-    lcd.setCursor(19, 3);
+    lcd.setCursor(18, 3);
     lcd.print(packetSizeChar(packetSize));
   }
   Udp.read(packetBuffer, BUFFER_SIZE);
