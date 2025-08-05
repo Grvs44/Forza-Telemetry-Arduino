@@ -287,8 +287,13 @@ void printLap(float lap) {
 #ifdef RPM_LEDS
 void updateRpmLeds(Sled* packet) {
   float value = packet->CurrentEngineRpm - packet->EngineIdleRpm;
-  unsigned int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
-  unsigned int ledsOn = ((unsigned int)value) / (increment - 1);
+  unsigned int ledsOn;
+  if (value > 0.0) {
+    unsigned int increment = (packet->EngineMaxRpm - packet->EngineIdleRpm) / sizeof(rpmLeds);
+    ledsOn = ((unsigned int)value) / (increment - 1);
+  } else {
+    ledsOn = 0;
+  }
   unsigned int i = 0;
   while (i <= min(ledsOn, sizeof(rpmLeds) - 1)) {
     digitalWrite(rpmLeds[i++], HIGH);
