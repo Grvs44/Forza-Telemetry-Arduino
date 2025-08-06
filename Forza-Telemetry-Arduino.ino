@@ -147,6 +147,9 @@ void loop() {
       lcd.setCursor(9, 0);
       lcd.print("race");
 #endif
+#ifdef GFORCE_LEDS
+      lc.clearDisplay(THOUSANDS);
+#endif
     } else {
       lcd.print("      In menu       ");
     }
