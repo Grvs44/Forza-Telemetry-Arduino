@@ -353,24 +353,13 @@ void stepGForceLeds() {
   digitalWrite(gforceLeds[position], HIGH);
 }
 
+// Wake up each matrix, set brightness to medium, and clear
 void setupMatrix() {
-  // Wake up the matrices
-  lc.shutdown(UNITS, false);
-  lc.shutdown(TENS, false);
-  lc.shutdown(HUNDREDS, false);
-  lc.shutdown(THOUSANDS, false);
-
-  // Set the brightness to a medium level
-  lc.setIntensity(UNITS, 0);
-  lc.setIntensity(TENS, 0);
-  lc.setIntensity(HUNDREDS, 0);
-  lc.setIntensity(THOUSANDS, 0);
-
-  // Clear the displays
-  lc.clearDisplay(UNITS);
-  lc.clearDisplay(TENS);
-  lc.clearDisplay(HUNDREDS);
-  lc.clearDisplay(THOUSANDS);
+  for (int i = 0; i < MAX_DEVICES; i++) {
+    lc.shutdown(i, false);
+    lc.setIntensity(i, 0);
+    lc.clearDisplay(i);
+  }
 }
 
 void displayGForce(float value) {
