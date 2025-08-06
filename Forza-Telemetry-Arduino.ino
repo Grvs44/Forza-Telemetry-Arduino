@@ -70,10 +70,10 @@ void setup() {
   lcd.setCursor(0, 3);
   lcd.print(VERSION);
 #ifdef GFORCE_LEDS
-  printMatrixDigit(THOUSANDS, PORT / 1000);
-  printMatrixDigit(HUNDREDS, PORT / 100 % 10);
-  printMatrixDigit(TENS, PORT / 10 % 10);
-  printMatrixDigit(UNITS, PORT % 10);
+  printMatrixDigit(3, PORT / 1000);
+  printMatrixDigit(2, PORT / 100 % 10);
+  printMatrixDigit(1, PORT / 10 % 10);
+  printMatrixDigit(0, PORT % 10);
 #endif
 }
 
@@ -148,7 +148,7 @@ void loop() {
       lcd.print("race");
 #endif
 #ifdef GFORCE_LEDS
-      lc.clearDisplay(THOUSANDS);
+      lc.clearDisplay(TENS);
 #endif
     } else {
       lcd.print("      In menu       ");
@@ -376,18 +376,21 @@ void displayGForce(float value) {
     int(value / 10)
   };
 
-  for (int i = 3; i >= 0; i--) {
+  // Update left display
+  if (newDisplay[3] != currentDisplay[3]) {
+    currentDisplay[3] = newDisplay[3];
+    if (newDisplay[3] == 0) lc.clearDisplay(3);
+    else printMatrixDigit(3, newDisplay[3]);
+  }
+
+  // Handle other displays
+  for (int i = 2; i >= 0; i--) {
     if (newDisplay[i] == currentDisplay[i]) continue;
     currentDisplay[i] = newDisplay[i];
-    if (i == THOUSANDS && newDisplay[i] == 0) {
-      lc.clearDisplay(THOUSANDS);
-      continue;
-    } else {
-      printMatrixDigit(i, newDisplay[i]);
-    }
-    if (i == HUNDREDS) {
+    printMatrixDigit(i, newDisplay[i]);
+    if (i == UNITS) {
       // Add decimal point
-      lc.setLed(HUNDREDS, 0, 6, 1);
+      lc.setLed(UNITS, 0, 6, 1);
     }
   }
 }

@@ -4,10 +4,10 @@
 #define UNO 1
 #define MEGA 2
 
-#define THOUSANDS 3
-#define HUNDREDS 2
-#define TENS 1
-#define UNITS 0
+#define TENS 3
+#define UNITS 2
+#define TENTHS 1
+#define HUNDREDTHS 0
 
 #define MAX_ROWS 7     // 8  // Row 8 is not used so skipped for performance
 #define MAX_COLUMNS 7  // 8  // Column 8 is not used so skipped for performance
