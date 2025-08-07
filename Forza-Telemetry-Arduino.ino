@@ -405,9 +405,9 @@ void printMatrixDigit(int display, int number) {
 }
 
 void displayNoGForce() {
-  printMatrixDigit(THOUSANDS, 11);
-  printMatrixDigit(HUNDREDS, 12);
-  printMatrixDigit(TENS, 13);
-  printMatrixDigit(UNITS, 14);
+  printMatrixDigit(TENS, 11);
+  printMatrixDigit(UNITS, 12);
+  printMatrixDigit(TENTHS, 13);
+  printMatrixDigit(HUNDREDTHS, 14);
 }
 #endif
