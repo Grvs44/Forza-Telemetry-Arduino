@@ -398,9 +398,7 @@ void displayGForce(float value) {
 void printMatrixDigit(int display, int number) {
   for (int row = 2; row < MAX_ROWS; row++)  // Skip rows 0 and 1 for performance
   {
-    for (int column = 0; column < MAX_COLUMNS; column++) {
-      lc.setLed(display, row, column, displayPixels[number][row][column]);
-    }
+    lc.setRow(display, row, displayPixels[number][row]);
   }
 }
 
