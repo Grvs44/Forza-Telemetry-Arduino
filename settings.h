@@ -27,6 +27,8 @@
 // #define BOARD UNO
 // Acceleration (G-force) direction LED pin numbers
 // #define GFORCE_LEDS {right, left, up, down, forward, backward}
+// Acceleration rounding precision (for direction LEDs)
+#define ACC_PREC 2.0
 
 // Include header to optionally override default settings
 #include "_conf.h"
