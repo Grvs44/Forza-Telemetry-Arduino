@@ -1,6 +1,6 @@
 // Software version
 #define VERSION \
-  "v0.1.0"
+  "v1.0.0"
 // Maximum size for received UDP packet
 #define BUFFER_SIZE 400
 // Milliseconds to wait at the start of each loop
