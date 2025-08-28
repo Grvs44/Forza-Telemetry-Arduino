@@ -120,11 +120,6 @@ void loop() {
 #ifdef PACKET_LED
   digitalWrite(PACKET_LED, HIGH);
 #endif
-  if (packetSize != lastPacketSize) {
-    lastPacketSize = packetSize;
-    lcd.setCursor(18, 3);
-    lcd.print(packetSizeChar(packetSize));
-  }
   Udp.read(packetBuffer, BUFFER_SIZE);
 
   State newState = (State)(((Sled*)packetBuffer)->IsRaceOn);
@@ -155,6 +150,11 @@ void loop() {
       lc.setLed(UNITS, 0, 6, false);
       lcd.print("      In menu       ");
     }
+  }
+  if (packetSize != lastPacketSize) {
+    lastPacketSize = packetSize;
+    lcd.setCursor(0, 3);
+    lcd.print(packetSizeText(packetSize));
   }
 
   switch (packetSize) {
@@ -189,13 +189,13 @@ void loop() {
 #endif
 }
 
-char packetSizeChar(int packetSize) {
+char* packetSizeText(int packetSize) {
   switch (packetSize) {
-    case sizeof(Sled): return 'S';
-    case sizeof(Dash7): return 'D';
-    case sizeof(DashH): return 'H';
-    case sizeof(DashM): return 'M';
-    default: return '?';
+    case sizeof(Sled): return "Motorsport 7 (Sled)";
+    case sizeof(Dash7): return "Motorsport 7 (Dash)";
+    case sizeof(DashH): return "Horizon 4/5";
+    case sizeof(DashM): return "Motorsport";
+    default: return "Unknown game";
   }
 }
 
