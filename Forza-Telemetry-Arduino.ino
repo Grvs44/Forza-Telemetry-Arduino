@@ -142,8 +142,8 @@ void loop() {
 #ifdef DISPLAY_RPM
       lcd.print("RPM:                ");
 #else
-      lcd.setCursor(9, 0);
-      lcd.print("race");
+      lcd.setCursor(6, 0);
+      lcd.print("In race");
 #endif
 #ifdef GFORCE_LEDS
       lc.clearDisplay(TENS);
