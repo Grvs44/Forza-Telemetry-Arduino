@@ -15,7 +15,8 @@
 #define PORT 8888
 
 // RPM LED pin numbers
-// #define RPM_LEDS { 2, 3, 5, 6, 7, 8 }
+#define RPM_LEDS \
+  { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41 }
 // Time in ms between each update in RPM step
 #define STEP_PERIOD 500
 // Display RPM on LCD
@@ -24,11 +25,15 @@
 // Gravitational field strength (g) ms^-2
 #define GFS 9.81
 // Board type (UNO or MEGA)
-// #define BOARD UNO
+#define BOARD MEGA
 // Acceleration (G-force) direction LED pin numbers
 // #define GFORCE_LEDS {right, left, up, down, forward, backward}
-// Acceleration rounding precision (for direction LEDs)
-#define ACC_PREC 2.0
+#define GFORCE_LEDS \
+  { 24, 25, 26, 27, 28, 29 }
+// Acceleration thresholds (turn direction LEDs when acceleration larger than this value)
+// {right/left, up/down, forward/backward}
+#define ACC_THRESHOLDS \
+  { 0.5, 1.0, 0.5 }
 
 // Include header to optionally override default settings
 #include "_conf.h"
