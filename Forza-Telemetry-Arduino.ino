@@ -120,11 +120,6 @@ void loop() {
 #ifdef PACKET_LED
   digitalWrite(PACKET_LED, HIGH);
 #endif
-  if (packetSize != lastPacketSize) {
-    lastPacketSize = packetSize;
-    lcd.setCursor(18, 3);
-    lcd.print(packetSizeChar(packetSize));
-  }
   Udp.read(packetBuffer, BUFFER_SIZE);
 
   State newState = (State)(((Sled*)packetBuffer)->IsRaceOn);
@@ -155,6 +150,11 @@ void loop() {
       lc.setLed(UNITS, 0, 6, false);
       lcd.print("      In menu       ");
     }
+  }
+  if (packetSize != lastPacketSize) {
+    lastPacketSize = packetSize;
+    lcd.setCursor(19, 3);
+    lcd.print(packetSizeChar(packetSize));
   }
 
   switch (packetSize) {
