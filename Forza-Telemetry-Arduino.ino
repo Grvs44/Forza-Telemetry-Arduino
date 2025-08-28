@@ -147,8 +147,12 @@ void loop() {
 #endif
 #ifdef GFORCE_LEDS
       lc.clearDisplay(TENS);
+      // Add decimal point
+      lc.setLed(UNITS, 0, 6, true);
 #endif
     } else {
+      // Remove decimal point
+      lc.setLed(UNITS, 0, 6, false);
       lcd.print("      In menu       ");
     }
   }
@@ -358,10 +362,11 @@ void setupMatrix() {
   }
 }
 
+// {hundredths, tenths, units, tens}
+int8_t currentDisplay[] = { -1, -1, -1, -1 };
+
 void displayGForce(float value) {
   static float currentValue = -1.0;
-  // {hundredths, tenths, units, tens}
-  static int currentDisplay[] = { 0, 0, 0, 0 };
 
   if (value == currentValue) return;
 
@@ -384,10 +389,6 @@ void displayGForce(float value) {
     if (newDisplay[i] == currentDisplay[i]) continue;
     currentDisplay[i] = newDisplay[i];
     printMatrixDigit(i, newDisplay[i]);
-    if (i == UNITS) {
-      // Add decimal point
-      lc.setLed(UNITS, 0, 6, 1);
-    }
   }
 }
 
@@ -399,6 +400,8 @@ void printMatrixDigit(int display, int number) {
 }
 
 void displayNoGForce() {
+  int i = 3;
+  while (i > 0) currentDisplay[i--] = -1;
   printMatrixDigit(TENS, 11);
   printMatrixDigit(UNITS, 12);
   printMatrixDigit(TENTHS, 13);
