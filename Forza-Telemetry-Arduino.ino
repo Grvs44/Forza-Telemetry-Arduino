@@ -193,9 +193,9 @@ char* packetSizeText(int packetSize) {
   switch (packetSize) {
     case sizeof(Sled): return "Motorsport 7 (Sled)";
     case sizeof(Dash7): return "Motorsport 7 (Dash)";
-    case sizeof(DashH): return "Horizon 4/5";
-    case sizeof(DashM): return "Motorsport";
-    default: return "Unknown game";
+    case sizeof(DashH): return "    Horizon 4/5    ";
+    case sizeof(DashM): return "     Motorsport    ";
+    default: return "    Unknown game   ";
   }
 }
 
